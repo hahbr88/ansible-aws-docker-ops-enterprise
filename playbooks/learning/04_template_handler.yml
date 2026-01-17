@@ -1,0 +1,25 @@
+---
+- name: 04) Templates and handlers
+  hosts: local
+  gather_facts: true
+  vars:
+    learning_dir: /tmp/ansible-learning
+    message_title: "Ansible Learning Template"
+    message_body: "Rendered on {{ ansible_date_time.date }} at {{ ansible_date_time.time }}"
+  tasks:
+    - name: Ensure learning directory exists
+      ansible.builtin.file:
+        path: "{{ learning_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Render template to file
+      ansible.builtin.template:
+        src: templates/hello.j2
+        dest: "{{ learning_dir }}/message.txt"
+        mode: "0644"
+      notify: Show rendered message
+  handlers:
+    - name: Show rendered message
+      ansible.builtin.command: "cat {{ learning_dir }}/message.txt"
+      changed_when: false

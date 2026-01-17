@@ -1,0 +1,7 @@
+---
+- name: 01) Ping localhost
+  hosts: local
+  gather_facts: false
+  tasks:
+    - name: Ping local host
+      ansible.builtin.ping:

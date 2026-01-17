@@ -1,0 +1,21 @@
+---
+- name: 02) Variables and facts
+  hosts: local
+  gather_facts: false
+  vars:
+    app_name: learning-app
+    app_ports:
+      - 8080
+      - 9090
+  tasks:
+    - name: Show basic variables
+      ansible.builtin.debug:
+        msg: "{{ app_name }} runs on ports {{ app_ports | join(', ') }}"
+
+    - name: Build a derived value with set_fact
+      ansible.builtin.set_fact:
+        app_summary: "{{ app_name }} => {{ app_ports | length }} ports"
+
+    - name: Display derived value
+      ansible.builtin.debug:
+        var: app_summary

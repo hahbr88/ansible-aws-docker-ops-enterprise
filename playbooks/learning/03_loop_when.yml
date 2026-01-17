@@ -1,0 +1,27 @@
+---
+- name: 03) Loops and when conditions
+  hosts: local
+  gather_facts: false
+  vars:
+    learning_dir: /tmp/ansible-learning
+    sample_files:
+      - name: alpha.txt
+        enabled: true
+      - name: beta.txt
+        enabled: false
+      - name: gamma.txt
+        enabled: true
+  tasks:
+    - name: Ensure learning directory exists
+      ansible.builtin.file:
+        path: "{{ learning_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Create files for enabled items only
+      ansible.builtin.copy:
+        dest: "{{ learning_dir }}/{{ item.name }}"
+        content: "Created by Ansible learning step 03: {{ item.name }}\n"
+        mode: "0644"
+      loop: "{{ sample_files }}"
+      when: item.enabled
