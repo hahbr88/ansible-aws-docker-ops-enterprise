@@ -17,122 +17,21 @@ git config --global user.email "github에 등록된 이메일@example.com"
 ```
 
 ---
-# Ansible 초급 → AWS → Docker 관리 학습 레포
-
-이 레포는 **Ansible 초급부터 시작해서**, 최종적으로는 **AWS 리소스 생성/관리**와 **Docker(엔진·컨테이너·이미지) 운영 자동화**까지 학습할 수 있도록 구성된 실습형 예제 모음입니다.
-
-## 목표
-- 인벤토리/변수/플레이북의 기본을 이해하고 실제로 실행
-- Role 기반 구조(재사용/표준화)를 익히고 템플릿/핸들러/태그를 적용
-- AWS 모듈(컬렉션)로 VPC/EC2/S3 등을 **코드로 생성/정리**
-- community.docker 모듈로 Docker 설치 및 컨테이너 운영 자동화
-
----
-
-## 빠른 시작
-
-### 1) 준비물
 - Linux/WSL(권장), 또는 macOS
 - Python 3.9+
 - Ansible (ansible-core)
 - AWS 자격증명(Access Key / Secret Key 또는 SSO/프로파일)
 
-> Windows 단독(파워쉘)에서도 가능하지만, **WSL2(Ubuntu)** 환경이 가장 편합니다.
 
 ### 2) 설치
 ```bash
-cd ansible-aws-docker-labs
 ./scripts/bootstrap.sh
 ./scripts/check.sh
 ```
-
-### 3) 기본 테스트
-```bash
-ansible -i inventories/local/hosts.ini local -m ping
-ansible-playbook playbooks/00_ping.yml
-```
-
----
-
-## 학습 로드맵
-
-### A. Ansible 기초
-1. `docs/01_basics.md` : Ansible가 무엇이고, ad-hoc 명령/모듈 실행
-2. `docs/02_inventory_vars.md` : 인벤토리/변수/팩트/조건문
-3. `docs/03_playbooks_roles.md` : 플레이북 구조, Role로 분리
-4. `docs/04_templates_handlers.md` : Jinja2 템플릿, 핸들러, idempotent 개념
-5. `docs/05_vault_secrets.md` : Vault로 시크릿 관리
-
-### B. Docker 관리 자동화
-- `docs/09_docker_management.md`
-- `playbooks/10_docker_install.yml`, `playbooks/11_docker_run_nginx.yml`
-- `roles/docker_engine`
-
-### C. AWS 관리 자동화
-- `docs/06_awsoverview.md`, `docs/07_aws_ec2_vpc_s3_iam.md`, `docs/08_dynamic_inventory_aws.md`
-- `playbooks/20_aws_create_vpc.yml`, `21_aws_create_ec2.yml`, `22_aws_s3_bucket.yml`, `23_aws_cleanup.yml`
-
----
-
-## 디렉터리 구조
-```
-ansible-aws-docker-labs/
-  ansible.cfg
-  requirements.yml
-  requirements.txt
-  inventories/
-  playbooks/
-  roles/
-  docs/
-  scripts/
-```
-
----
-
-## 실행 예시 모음
-
-### Nginx 설치 (로컬)
-```bash
-ansible-playbook -i inventories/local/hosts.ini playbooks/02_nginx.yml
-```
-
-### Role 기반 웹서버 배포
-```bash
-ansible-playbook -i inventories/local/hosts.ini playbooks/03_role_web.yml
-```
-
-### Docker 호스트에 엔진 설치
-```bash
-ansible-playbook -i inventories/docker/hosts.ini playbooks/10_docker_install.yml
-```
-
-### AWS VPC + EC2 만들기
-```bash
-# AWS 자격 증명은 환경변수 또는 ~/.aws/credentials(프로파일)로 설정
-ansible-playbook playbooks/20_aws_create_vpc.yml -e aws_region=ap-northeast-2
-ansible-playbook playbooks/21_aws_create_ec2.yml -e aws_region=ap-northeast-2
-```
-
-> 비용이 발생할 수 있으니, 실습 후 `playbooks/23_aws_cleanup.yml`로 정리하세요.
-
----
-
-- Ansible 기본(인벤토리/변수/템플릿/핸들러/Role)
-- **Docker 엔진 설치 + Compose 스택 배포**
-- **Rolling 배포(멀티 호스트)**: `serial: 1` 방식으로 한 대씩 업데이트 + 헬스체크
-- **Blue-Green 배포(단일 호스트)**: inactive 스택 업데이트 → 헬스체크 → nginx 업스트림 스위치
-- **AWS 운영(SSH 없이)**: EC2를 **SSM Session Manager**로 접속/자동화(SSH 포트 오픈 불필요)
-
-> 권장 환경: Linux / macOS / Windows(WSL)
-
-## 0) 설치
+### 권한 문제 발생 시
 ```
 chmod +x scripts/bootstrap.sh
 ./scripts/bootstrap.sh
-```
-```bash
-./scripts/bootstrap.sh
-./scripts/check.sh
 ```
 ## Ubuntu/Debian이 PEP 668(Externally Managed Environment) 정책을 적용해서, 시스템 Python에 pip로 전역 설치를 막는 상황입니다(특히 Ubuntu 23.10+/24.04, Python 3.12에서 흔함).
 ## 가장 안전하고 깔끔한 해결은 레포 안에 venv(가상환경)를 만들고 거기에 Ansible/라이브러리를 설치
@@ -232,7 +131,73 @@ PLAY RECAP *********************************************************************
 local                      : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0 
 ```
 
-## 2) Docker 엔진 설치 → Compose 배포
+### 3) 기본 테스트
+```bash
+ansible -i inventories/local/hosts.ini local -m ping
+ansible-playbook playbooks/00_ping.yml
+```
+
+## 참고 사항
+1. `docs/01_basics.md` : Ansible가 무엇이고, ad-hoc 명령/모듈 실행
+2. `docs/02_inventory_vars.md` : 인벤토리/변수/팩트/조건문
+3. `docs/03_playbooks_roles.md` : 플레이북 구조, Role로 분리
+4. `docs/04_templates_handlers.md` : Jinja2 템플릿, 핸들러, idempotent 개념
+5. `docs/05_vault_secrets.md` : Vault로 시크릿 관리
+### 등등 docs 폴더 참조
+
+### Nginx 설치 (로컬)
+```bash
+ansible-playbook -i inventories/local/hosts.ini playbooks/02_nginx.yml
+```
+```
+(.venv) kimdy@DESKTOP-CLQV18N:~/ansible-aws-docker-ops-enterprise$ ansible-playbook -i inventories/local/hosts.ini playbooks/02_nginx.yml
+
+PLAY [02) Install nginx and publish simple page (no role)] **********************************************************************
+
+TASK [Gathering Facts] **********************************************************************************************************
+ok: [localhost]
+
+TASK [Install nginx (Debian/Ubuntu)] ********************************************************************************************
+
+
+
+[ERROR]: Task failed: Module failed: Failed to lock apt for exclusive operation: Failed to lock directory /var/lib/apt/lists/: E:Could not open lock file /var/lib/apt/lists/lock - open (13: Permission denied)
+Origin: /home/kimdy/ansible-aws-docker-ops-enterprise/playbooks/02_nginx.yml:7:7
+
+5
+6   tasks:
+7     - name: Install nginx (Debian/Ubuntu)
+        ^ column 7
+
+fatal: [localhost]: FAILED! => {"changed": false, "msg": "Failed to lock apt for exclusive operation: Failed to lock directory /var/lib/apt/lists/: E:Could not open lock file /var/lib/apt/lists/lock - open (13: Permission denied)"}
+
+PLAY RECAP **********************************************************************************************************************
+localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0 
+```
+```
+ansible-playbook -i inventories/local/hosts.ini playbooks/02_nginx.yml --become --ask-become-pass
+```
+
+### Role 기반 웹서버 배포
+```bash
+ansible-playbook -i inventories/local/hosts.ini playbooks/03_role_web.yml
+```
+
+### Docker 호스트에 엔진 설치
+```bash
+ansible-playbook -i inventories/docker/hosts.ini playbooks/10_docker_install.yml
+```
+
+### AWS VPC + EC2 만들기
+```bash
+# AWS 자격 증명은 환경변수 또는 ~/.aws/credentials(프로파일)로 설정
+ansible-playbook playbooks/20_aws_create_vpc.yml -e aws_region=ap-northeast-2
+ansible-playbook playbooks/21_aws_create_ec2.yml -e aws_region=ap-northeast-2
+```
+
+> 비용이 발생할 수 있으니, 실습 후 `playbooks/23_aws_cleanup.yml`로 정리하세요.
+
+## Docker 엔진 설치 → Compose 배포
 
 ```bash
 ansible-playbook -i inventories/dev/hosts.ini playbooks/10_docker_engine_install.yml
@@ -260,6 +225,8 @@ ansible-playbook -i inventories/dev/hosts.ini playbooks/10_docker_engine_install
 ```
 ansible-playbook -i inventories/dev/hosts.ini playbooks/11_deploy_stack.yml
 ```
+
+
 
 ## 3) Rolling 배포(멀티 호스트)
 
