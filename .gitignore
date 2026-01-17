@@ -1,10 +1,40 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# venv (virtualenv)
+.venv/
+venv/
+env/
+ENV/
+pip-wheel-metadata/
+
+# --- Ansible / Molecule ---
 *.retry
+.molecule/
+.ansible/
+collections/
+.cache/
+ansible.log
+*.log
+
+# --- IDE / Editor ---
 .vscode/
 .idea/
-__pycache__/
-collections/
-.molecule/
-.cache/
-*.log
+*.swp
+*.swo
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# --- Local secrets / env ---
 .env
 .venv

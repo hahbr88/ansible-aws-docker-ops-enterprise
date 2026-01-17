@@ -1,0 +1,11 @@
+---
+# 공통 패키지 (환경에 맞게 확장)
+common_packages_debian:
+  - curl
+  - git
+  - unzip
+
+common_packages_redhat:
+  - curl
+  - git
+  - unzip

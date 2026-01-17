@@ -1,0 +1,26 @@
+---
+- name: Create app group
+  ansible.builtin.group:
+    name: "{{ app_group }}"
+    state: present
+
+- name: Create app user
+  ansible.builtin.user:
+    name: "{{ app_user }}"
+    group: "{{ app_group }}"
+    create_home: true
+    shell: /bin/bash
+    state: present
+
+- name: Install common packages (Debian)
+  ansible.builtin.apt:
+    name: "{{ common_packages_debian }}"
+    state: present
+    update_cache: true
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Install common packages (RedHat)
+  ansible.builtin.yum:
+    name: "{{ common_packages_redhat }}"
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'

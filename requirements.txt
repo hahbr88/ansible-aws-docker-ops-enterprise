@@ -1,0 +1,5 @@
+# AWS 모듈들은 boto3/botocore에 의존
+boto3>=1.28.0
+botocore>=1.31.0
+# 품질 도구(선택)
+ansible-lint>=6.20.0

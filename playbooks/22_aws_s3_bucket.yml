@@ -1,0 +1,20 @@
+---
+- name: 22) AWS - Create S3 bucket
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    bucket_name: "ansible-lab-{{ lookup('ansible.builtin.pipe', 'date +%s') }}"
+
+  tasks:
+    - name: Create bucket
+      amazon.aws.s3_bucket:
+        name: "{{ bucket_name }}"
+        region: "{{ aws_region }}"
+        state: present
+        tags: "{{ aws_tags }}"
+
+    - name: Show bucket
+      ansible.builtin.debug:
+        msg: "Created bucket: {{ bucket_name }}"

@@ -1,0 +1,8 @@
+---
+- name: 03) Webserver via role
+  hosts: all
+  gather_facts: true
+  roles:
+    - role: common
+    - role: webserver
+      tags: [web]

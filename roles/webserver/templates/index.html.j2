@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ansible Web</title>
+  </head>
+  <body>
+    <h1>Ansible Role Webserver</h1>
+    <ul>
+      <li>host: {{ inventory_hostname }}</li>
+      <li>user: {{ app_user }}</li>
+      <li>time: {{ ansible_date_time.iso8601 | default('') }}</li>
+    </ul>
+  </body>
+</html>

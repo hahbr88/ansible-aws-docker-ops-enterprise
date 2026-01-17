@@ -1,0 +1,36 @@
+---
+- name: 21) AWS - Create EC2 instance
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+    - ./aws_outputs.yml
+
+  vars:
+    instance_name: ansible-lab-ec2
+    instance_type: t3.micro
+    # AMI는 지역별로 다릅니다. 아래 값은 예시이며 반드시 본인 계정/리전에 맞게 바꾸세요.
+    # 조회 예: aws ec2 describe-images --owners amazon --filters 'Name=name,Values=al2023-ami-*-x86_64' --region ap-northeast-2
+    ami_id: "ami-xxxxxxxxxxxxxxxxx"
+    key_name: "my-keypair"   # 본인 키페어 이름
+
+  tasks:
+    - name: Create EC2 instance
+      amazon.aws.ec2_instance:
+        name: "{{ instance_name }}"
+        region: "{{ aws_region }}"
+        key_name: "{{ key_name }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ ami_id }}"
+        vpc_subnet_id: "{{ subnet_id }}"
+        security_group: "{{ sg_id }}"
+        network:
+          assign_public_ip: true
+        tags: "{{ aws_tags | combine({'Name': instance_name, 'Role': 'web'}) }}"
+        wait: true
+      register: ec2
+
+    - name: Show instance public IP
+      ansible.builtin.debug:
+        msg: "EC2 Public IP: {{ ec2.instances[0].public_ip_address | default('N/A') }}"

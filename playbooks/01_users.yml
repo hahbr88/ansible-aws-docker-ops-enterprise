@@ -1,0 +1,6 @@
+---
+- name: 01) Create app user and basic packages
+  hosts: all
+  gather_facts: true
+  roles:
+    - role: common
