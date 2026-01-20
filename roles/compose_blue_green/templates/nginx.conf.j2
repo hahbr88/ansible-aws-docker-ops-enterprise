@@ -6,7 +6,7 @@ http {
   server {
     listen {{ public_port }};
     location / {
-      proxy_pass http://127.0.0.1:{{ active_backend_port }};
+      proxy_pass http://{{ active_backend_service }}:80;
     }
   }
 }

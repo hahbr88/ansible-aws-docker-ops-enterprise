@@ -38,3 +38,5 @@ Desktop.ini
 # --- Local secrets / env ---
 .env
 .venv
+playbooks/aws_outputs.yml
+inventories/dev/group_vars/

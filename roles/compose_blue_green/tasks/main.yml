@@ -7,7 +7,7 @@
 
 - name: Copy bg stack files
   ansible.builtin.copy:
-    src: "stacks/sample-webapp-bg/"
+    src: "{{ bg_stack_src_dir }}/"
     dest: "{{ bg_root }}/"
     mode: '0644'
 
@@ -31,6 +31,30 @@
   ansible.builtin.set_fact:
     active_port: "{{ blue_port if active_color == 'blue' else green_port }}"
     inactive_port: "{{ green_port if active_color == 'blue' else blue_port }}"
+    active_service: "{{ 'blue' if active_color == 'blue' else 'green' }}"
+    inactive_service: "{{ 'green' if active_color == 'blue' else 'blue' }}"
+
+# nginx.conf가 디렉터리로 만들어져 있으면 제거해서 파일로 렌더링합니다. / Remove nginx.conf directory so we can render a file.
+- name: Check nginx.conf path type
+  ansible.builtin.stat:
+    path: "{{ bg_root }}/nginx.conf"
+  register: nginx_conf_stat
+
+- name: Remove nginx.conf directory if present
+  ansible.builtin.file:
+    path: "{{ bg_root }}/nginx.conf"
+    state: absent
+  when: nginx_conf_stat.stat.isdir | default(false)
+
+# compose up 전에 nginx.conf를 파일로 렌더링합니다(nginx가 파일로 마운트). / Render nginx.conf before compose up (nginx mounts it as a file).
+- name: Render nginx config for current active
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: "{{ bg_root }}/nginx.conf"
+    mode: '0644'
+  vars:
+    active_backend_service: "{{ active_service }}"
+  register: nginx_conf_initial
 
 # 1) inactive 스택을 최신으로 올림
 - name: Compose up inactive stack
@@ -57,15 +81,16 @@
     dest: "{{ bg_root }}/nginx.conf"
     mode: '0644'
   vars:
-    active_backend_port: "{{ inactive_port }}"
+    active_backend_service: "{{ inactive_service }}"
+  register: nginx_conf_switch
 
-# 4) nginx 컨테이너 reload
-- name: Reload nginx container
-  community.docker.docker_container_exec:
-    container: sample-bg-nginx
-    command: ["nginx", "-s", "reload"]
-  register: nginx_reload
-  failed_when: false
+# 4) nginx 컨테이너를 재시작해서 바인드 마운트 파일 변경을 반영합니다. / Restart nginx to pick up bind-mounted file changes.
+- name: Restart nginx container if config changed
+  community.docker.docker_container:
+    name: sample-bg-nginx
+    state: started
+    restart: true
+  when: (nginx_conf_initial.changed | default(false)) or (nginx_conf_switch.changed | default(false))
 
 # 5) ACTIVE 전환 기록
 - name: Switch ACTIVE

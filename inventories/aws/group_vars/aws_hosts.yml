@@ -1,0 +1,16 @@
+---
+# EC2 접속 정보는 환경변수로 받습니다. / Use environment variables for EC2 connection info.
+ansible_host: "{{ lookup('env', 'EC2_HOST') }}"
+ansible_user: "{{ lookup('env', 'EC2_USER') | default('ec2-user', true) }}"
+ansible_ssh_private_key_file: "{{ lookup('env', 'EC2_KEY_PATH') }}"
+ansible_python_interpreter: /usr/bin/python3
+
+# 스택/웹 루트 기본값(필요하면 환경변수로 덮어쓰기). / Stack defaults (override via env if needed).
+web_root: "{{ lookup('env', 'WEB_ROOT') | default('/usr/share/nginx/html', true) }}"
+compose_project_root: "{{ lookup('env', 'COMPOSE_ROOT') | default('/opt/compose', true) }}"
+stack_name: "{{ lookup('env', 'STACK_NAME') | default('sample-webapp', true) }}"
+stack_src_dir: "{{ lookup('env', 'STACK_SRC_DIR') | default(playbook_dir + '/../stacks/sample-webapp', true) }}"
+stack_dest_dir: "{{ compose_project_root }}/{{ stack_name }}"
+healthcheck_url: "{{ lookup('env', 'HEALTHCHECK_URL') | default('http://127.0.0.1:8080/', true) }}"
+healthcheck_retries: "{{ lookup('env', 'HEALTHCHECK_RETRIES') | default(20, true) }}"
+healthcheck_delay: "{{ lookup('env', 'HEALTHCHECK_DELAY') | default(2, true) }}"

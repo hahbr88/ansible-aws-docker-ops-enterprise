@@ -5,7 +5,8 @@
   vars:
     learning_dir: /tmp/ansible-learning
     message_title: "Ansible Learning Template"
-    message_body: "Rendered on {{ ansible_date_time.date }} at {{ ansible_date_time.time }}"
+    # Use ansible_facts to avoid deprecated top-level fact injection.
+    message_body: "Rendered on {{ ansible_facts[\"date_time\"].date }} at {{ ansible_facts[\"date_time\"].time }}"
   tasks:
     - name: Ensure learning directory exists
       ansible.builtin.file:

@@ -1,6 +1,8 @@
 services:
-  whoami:
-    image: traefik/whoami:latest
-    container_name: sample-whoami
+  web:
+    image: nginx:latest
+    container_name: sample-web
     ports:
       - "8080:80"
+    volumes:
+      - ./site:/usr/share/nginx/html:ro

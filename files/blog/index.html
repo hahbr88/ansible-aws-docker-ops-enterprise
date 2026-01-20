@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Harbor Notes — A Personal Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="grain"></div>
+    <header class="site-header">
+      <div class="brand">
+        <span class="dot"></span>
+        <div>
+          <p class="label">Harbor Notes</p>
+          <p class="sub">Personal essays, field notes, and sketches.</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="#featured">Featured</a>
+        <a href="#latest">Latest</a>
+        <a href="#journal">Journal</a>
+        <a href="#subscribe" class="nav-cta">Subscribe</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="pill">Issue 24 · Early Autumn</p>
+          <h1>Slow writing for fast weeks.</h1>
+          <p class="lead">
+            Harbor Notes is a quiet corner for reflections on product craft,
+            travel rituals, and the small systems that keep me grounded.
+          </p>
+          <div class="hero-actions">
+            <button class="primary" id="shuffle">Shuffle a thought</button>
+            <button class="ghost">Start reading</button>
+          </div>
+          <div class="rotator" id="rotator">"Collect moments, not metrics."</div>
+        </div>
+        <div class="hero-card">
+          <div class="card-top">
+            <span>Currently brewing</span>
+            <h3>Seaside Systems</h3>
+          </div>
+          <div class="card-body">
+            <p>
+              A weekly practice of writing one page about the work that matters
+              most, before the day gets busy.
+            </p>
+            <div class="meta">
+              <span>8 min read</span>
+              <span>Illustrated</span>
+              <span>Field notes</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid" id="featured">
+        <div class="section-header">
+          <h2>Featured essays</h2>
+          <div class="filters">
+            <button class="chip active">All</button>
+            <button class="chip">Workflows</button>
+            <button class="chip">Travel</button>
+            <button class="chip">Studio</button>
+          </div>
+        </div>
+        <div class="cards">
+          <article class="post">
+            <div class="post-art gradient-a"></div>
+            <div class="post-copy">
+              <p class="eyebrow">Studio Systems</p>
+              <h3>Designing a ritual for ending the day.</h3>
+              <p>Creating a 12-minute checklist that closes every project loop.</p>
+            </div>
+          </article>
+          <article class="post">
+            <div class="post-art gradient-b"></div>
+            <div class="post-copy">
+              <p class="eyebrow">On the Road</p>
+              <h3>The coastal train and the art of pacing.</h3>
+              <p>Why the slowest travel days teach me the most.</p>
+            </div>
+          </article>
+          <article class="post">
+            <div class="post-art gradient-c"></div>
+            <div class="post-copy">
+              <p class="eyebrow">Product Notes</p>
+              <h3>Shipping as a seasonal practice.</h3>
+              <p>Planning releases like harvests, not sprints.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="split" id="latest">
+        <div class="panel">
+          <h2>Latest dispatches</h2>
+          <ul class="list">
+            <li>
+              <span class="date">Sep 01</span>
+              <div>
+                <h4>Sketching with constraints</h4>
+                <p>Five prompts that reset my creative routines.</p>
+              </div>
+            </li>
+            <li>
+              <span class="date">Aug 25</span>
+              <div>
+                <h4>From inbox to index cards</h4>
+                <p>A simple analog workflow for busy weeks.</p>
+              </div>
+            </li>
+            <li>
+              <span class="date">Aug 17</span>
+              <div>
+                <h4>Quiet product launches</h4>
+                <p>How to share updates without the hype spiral.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <aside class="panel journal" id="journal">
+          <h3>Journal open</h3>
+          <p>
+            Every Wednesday I publish a photo from my notebook, a short note,
+            and a question to carry into the week.
+          </p>
+          <div class="journal-box">
+            <div>
+              <p class="label">Next drop</p>
+              <p class="countdown" id="countdown">Wednesday 7:00 AM</p>
+            </div>
+            <button class="ghost">Get a reminder</button>
+          </div>
+        </aside>
+      </section>
+
+      <section class="subscribe" id="subscribe">
+        <div>
+          <h2>Join the Sunday letter</h2>
+          <p>One thoughtful email per week. No ads, no noise.</p>
+        </div>
+        <form class="form">
+          <input type="email" placeholder="you@example.com" />
+          <button type="button" class="primary">Subscribe</button>
+        </form>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Harbor Notes · Built with care and calm.</p>
+      <div class="footer-links">
+        <a href="#">RSS</a>
+        <a href="#">Archive</a>
+        <a href="#">Contact</a>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

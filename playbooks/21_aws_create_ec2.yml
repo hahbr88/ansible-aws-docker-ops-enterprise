@@ -4,16 +4,31 @@
   connection: local
   gather_facts: false
 
-  vars_files:
-    - ./aws_outputs.yml
-
   vars:
     instance_name: ansible-lab-ec2
     instance_type: t3.micro
+    # 로컬 실행 시 venv Python을 강제 사용합니다. / Force venv Python for local execution.
+    ansible_python_interpreter: "{{ playbook_dir }}/../.venv/bin/python"
     # AMI는 지역별로 다릅니다. 아래 값은 예시이며 반드시 본인 계정/리전에 맞게 바꾸세요.
     # 조회 예: aws ec2 describe-images --owners amazon --filters 'Name=name,Values=al2023-ami-*-x86_64' --region ap-northeast-2
-    ami_id: "ami-xxxxxxxxxxxxxxxxx"
-    key_name: "my-keypair"   # 본인 키페어 이름
+    ami_id: "{{ lookup('env', 'AWS_AMI_ID') | default('ami-0e2b034d7a30695a8', true) }}"
+    key_name: "{{ lookup('env', 'AWS_KEY_NAME') | default('my-keypair', true) }}"   # 본인 키페어 이름
+
+  pre_tasks:
+    - name: Ensure AWS defaults are set
+      ansible.builtin.set_fact:
+        aws_region: "{{ aws_region | default('ap-northeast-2') }}"
+        aws_tags: "{{ aws_tags | default({'Project': 'ansible-labs', 'ManagedBy': 'ansible'}) }}"
+        vpc_subnet_id: "{{ lookup('env', 'AWS_SUBNET_ID') | default('', true) }}"
+        security_group_id: "{{ lookup('env', 'AWS_SG_ID') | default('', true) }}"
+
+    # 서브넷/보안그룹은 환경변수로 받습니다. / Subnet/SG must be provided via env.
+    - name: Require subnet/sg env vars
+      ansible.builtin.assert:
+        that:
+          - vpc_subnet_id | length > 0
+          - security_group_id | length > 0
+        fail_msg: "Set AWS_SUBNET_ID and AWS_SG_ID environment variables first."
 
   tasks:
     - name: Create EC2 instance
@@ -23,8 +38,8 @@
         key_name: "{{ key_name }}"
         instance_type: "{{ instance_type }}"
         image_id: "{{ ami_id }}"
-        vpc_subnet_id: "{{ subnet_id }}"
-        security_group: "{{ sg_id }}"
+        vpc_subnet_id: "{{ vpc_subnet_id }}"
+        security_group: "{{ security_group_id }}"
         network:
           assign_public_ip: true
         tags: "{{ aws_tags | combine({'Name': instance_name, 'Role': 'web'}) }}"

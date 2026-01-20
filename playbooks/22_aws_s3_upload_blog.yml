@@ -1,13 +1,14 @@
 ---
-- name: 22) AWS - Create S3 bucket
+- name: 22) AWS - Upload blog assets to S3
   hosts: localhost
   connection: local
   gather_facts: false
 
   vars:
-    bucket_name: "{{ lookup('env', 'AWS_S3_BUCKET') | default('ansible-lab-' + lookup('ansible.builtin.pipe', 'date +%s'), true) }}"
     # 로컬 실행 시 venv Python을 강제 사용합니다. / Force venv Python for local execution.
     ansible_python_interpreter: "{{ playbook_dir }}/../.venv/bin/python"
+    bucket_name: "{{ lookup('env', 'AWS_S3_BUCKET') | default('ansible-lab-1768896871', true) }}"
+    blog_src_dir: "{{ playbook_dir }}/../files/blog"
 
   pre_tasks:
     - name: Ensure AWS defaults are set
@@ -16,13 +17,10 @@
         aws_tags: "{{ aws_tags | default({'Project': 'ansible-labs', 'ManagedBy': 'ansible'}) }}"
 
   tasks:
-    - name: Create bucket
-      amazon.aws.s3_bucket:
-        name: "{{ bucket_name }}"
-        region: "{{ aws_region }}"
-        state: present
-        tags: "{{ aws_tags }}"
-
-    - name: Show bucket
-      ansible.builtin.debug:
-        msg: "Created bucket: {{ bucket_name }}"
+    # AWS CLI로 동기화합니다(컬렉션 모듈 의존성 회피). / Sync via AWS CLI to avoid collection module dependency.
+    - name: Upload blog assets to S3
+      ansible.builtin.command:
+        cmd: >-
+          aws s3 sync "{{ blog_src_dir }}"
+          "s3://{{ bucket_name }}/"
+          --delete

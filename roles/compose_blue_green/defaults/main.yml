@@ -1,6 +1,7 @@
 ---
 # blue/green 기본값
 bg_root: "{{ compose_project_root }}/sample-webapp-bg"
+bg_stack_src_dir: "stacks/sample-webapp-bg"
 active_color_file: "{{ bg_root }}/ACTIVE"
 blue_port: 8081
 green_port: 8082

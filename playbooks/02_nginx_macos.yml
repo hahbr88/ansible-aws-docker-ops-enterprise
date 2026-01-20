@@ -1,0 +1,34 @@
+---
+- name: 02) Install nginx on macOS via Homebrew (local)
+  hosts: local
+  gather_facts: true
+  vars:
+    # Homebrew prefix differs by CPU arch; set a sensible default web root.
+    web_root_macos: >-
+      {{ '/opt/homebrew/var/www' if ansible_facts['architecture'] == 'arm64'
+         else '/usr/local/var/www' }}
+  tasks:
+    - name: Install nginx via Homebrew
+      community.general.homebrew:
+        name: nginx
+        state: present
+
+    - name: Ensure web root exists (Homebrew path)
+      ansible.builtin.file:
+        path: "{{ web_root_macos }}"
+        state: directory
+        mode: "0755"
+
+    - name: Write index.html
+      ansible.builtin.copy:
+        dest: "{{ web_root_macos }}/index.html"
+        content: |
+          <h1>Hello Ansible (macOS)</h1>
+          <p>host={{ inventory_hostname }}</p>
+        mode: "0644"
+
+    - name: Enable and start nginx (Homebrew service)
+      community.general.homebrew_services:
+        name: nginx
+        state: started
+        enabled: true

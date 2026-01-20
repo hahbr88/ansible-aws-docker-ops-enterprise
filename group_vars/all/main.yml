@@ -14,3 +14,9 @@ stack_dest_dir: "{{ compose_project_root }}/{{ stack_name }}"
 healthcheck_url: "http://127.0.0.1:8080/"
 healthcheck_retries: 20
 healthcheck_delay: 2
+
+# AWS 기본값(학습용). / AWS defaults (for training).
+aws_region: ap-northeast-2
+aws_tags:
+  Project: ansible-labs
+  ManagedBy: ansible

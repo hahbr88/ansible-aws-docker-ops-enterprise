@@ -1,10 +1,19 @@
 ---
-- name: Install prerequisites
+- name: Install prerequisites (non-Amazon Linux)
   ansible.builtin.package:
     name:
       - ca-certificates
       - curl
     state: present
+  when: ansible_facts['distribution'] != 'Amazon'
+
+# Amazon Linux 2023는 curl-minimal이 기본이라 curl 패키지 설치가 충돌할 수 있습니다. / Amazon Linux 2023 ships curl-minimal; installing curl may conflict.
+- name: Install prerequisites (Amazon Linux)
+  ansible.builtin.package:
+    name:
+      - ca-certificates
+    state: present
+  when: ansible_facts['distribution'] == 'Amazon'
 
 - name: Install Docker on Debian/Ubuntu
   when: ansible_facts.os_family == 'Debian'
@@ -29,6 +38,37 @@
           - docker-compose-plugin
         update_cache: true
         state: present
+
+# Amazon Linux에서는 docker 패키지를 설치합니다. / Install docker package on Amazon Linux.
+- name: Install Docker on Amazon Linux
+  when: ansible_facts['distribution'] == 'Amazon'
+  ansible.builtin.package:
+    name:
+      - docker
+    state: present
+
+# Amazon Linux에서 docker compose 플러그인을 설치합니다. / Install docker compose plugin on Amazon Linux.
+- name: Ensure docker compose plugin dir exists (Amazon Linux)
+  when: ansible_facts['distribution'] == 'Amazon'
+  ansible.builtin.file:
+    path: /usr/local/lib/docker/cli-plugins
+    state: directory
+    mode: "0755"
+
+- name: Check docker compose plugin (Amazon Linux)
+  when: ansible_facts['distribution'] == 'Amazon'
+  ansible.builtin.stat:
+    path: /usr/local/lib/docker/cli-plugins/docker-compose
+  register: docker_compose_plugin
+
+- name: Install docker compose plugin (Amazon Linux)
+  when:
+    - ansible_facts['distribution'] == 'Amazon'
+    - not docker_compose_plugin.stat.exists
+  ansible.builtin.get_url:
+    url: https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64
+    dest: /usr/local/lib/docker/cli-plugins/docker-compose
+    mode: "0755"
 
 - name: Ensure docker service enabled and started
   ansible.builtin.service:

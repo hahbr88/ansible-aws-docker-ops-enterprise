@@ -1,0 +1,41 @@
+---
+- name: 22) AWS - Enable S3 static website hosting
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    # 로컬 실행 시 venv Python을 강제 사용합니다. / Force venv Python for local execution.
+    ansible_python_interpreter: "{{ playbook_dir }}/../.venv/bin/python"
+    bucket_name: "{{ lookup('env', 'AWS_S3_BUCKET') | default('ansible-lab-1768896871', true) }}"
+
+  pre_tasks:
+    - name: Ensure AWS defaults are set
+      ansible.builtin.set_fact:
+        aws_region: "{{ aws_region | default('ap-northeast-2') }}"
+
+  tasks:
+    # 공개 웹 호스팅을 위해 퍼블릭 액세스 차단을 해제합니다. / Disable public access block for website hosting.
+    - name: Disable public access block
+      ansible.builtin.command:
+        cmd: >-
+          aws s3api put-public-access-block
+          --bucket "{{ bucket_name }}"
+          --public-access-block-configuration
+          BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false
+
+    # 정적 웹사이트 호스팅을 활성화합니다. / Enable static website hosting.
+    - name: Enable static website hosting
+      ansible.builtin.command:
+        cmd: >-
+          aws s3 website "s3://{{ bucket_name }}/"
+          --index-document index.html
+          --error-document index.html
+
+    # 퍼블릭 읽기 정책을 적용합니다. / Apply public read policy.
+    - name: Apply bucket policy for public read
+      ansible.builtin.command:
+        cmd: >-
+          aws s3api put-bucket-policy
+          --bucket "{{ bucket_name }}"
+          --policy '{"Version":"2012-10-17","Statement":[{"Sid":"PublicRead","Effect":"Allow","Principal":"*","Action":["s3:GetObject"],"Resource":["arn:aws:s3:::{{ bucket_name }}/*"]}]}'
